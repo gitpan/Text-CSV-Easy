@@ -12,11 +12,11 @@ Text::CSV::Easy - easy csv parsing and building
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 our @EXPORT_OK = qw(csv_build csv_parse);
 
@@ -40,6 +40,10 @@ Integers do not need to be quoted, but strings must be quoted:
 If you need to use a literal quote ("), escape it with another quote:
 
     "one","some ""quoted"" string"
+
+There is also a difference between an empty string and an undefined value:
+
+    "",                 ( '', undef )
 
 =cut
 
