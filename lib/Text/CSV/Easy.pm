@@ -12,13 +12,17 @@ Text::CSV::Easy - easy csv parsing and building
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
 
-our $VERSION = '0.03';
+our $VERSION = '0.4';
 
 our @EXPORT_OK = qw(csv_build csv_parse);
+
+# used to ensure XS and PP stay in sync.
+our $TCE_VERSION;
+BEGIN { $TCE_VERSION = 1 }
 
 =head1 SYNOPSIS
 
@@ -51,7 +55,7 @@ my $MODULE;
 
 BEGIN {
     my $xs_loaded = eval { require Text::CSV::Easy_XS; 1 };
-    if ($xs_loaded) {
+    if ( $xs_loaded && $Text::CSV::Easy_XS::TCE_VERSION == $TCE_VERSION ) {
         $MODULE = 'Text::CSV::Easy_XS';
     }
     else {
