@@ -1,5 +1,5 @@
 ---
-abstract: 'easy csv parsing and building'
+abstract: 'Easy CSV parsing and building'
 author:
   - 'Tom Peters <weters@me.com>'
 build_requires:
@@ -20,4 +20,4 @@ no_index:
     - inc
 requires:
   perl: 5.01
-version: 0.4
+version: 0.05
