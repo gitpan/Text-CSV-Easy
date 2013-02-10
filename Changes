@@ -1,5 +1,10 @@
 Revision history for Text-CSV-Easy
 
+0.51    2013-02-09
+        Slightly optimizes the regexp for CSV parsing.
+        Properly handles CRLF.
+        Improved documentation.
+
 0.50    2013-02-09
         Supports RFC 4180.
 
@@ -19,4 +24,3 @@ Revision history for Text-CSV-Easy
 
 0.01    2013-02-06
         First version, released on an unsuspecting world.
-

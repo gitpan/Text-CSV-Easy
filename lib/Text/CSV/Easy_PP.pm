@@ -39,9 +39,10 @@ This module conforms to RFC 4180 (L<http://tools.ietf.org/html/rfc4180>) for bot
 
  "a,b","a\nb","a""b" => ( 'a,b', "a\nb", 'a"b' )
 
-=item 4. A trailing newline is acceptable.
+=item 4. A trailing newline is acceptable (both LF and CRLF).
 
  abc,def\n           => ( 'abc', 'def' )
+ abc,def\r\n         => ( 'abc', 'def' )
 
 =back
 
@@ -87,26 +88,32 @@ sub csv_parse {
     my @fields;
     while (
         $str =~ / (?:^|,) 
-          (?: ""
-            | ([^",\n]*)
-            | "(.*?)(?<![^"]")"
+          (?: ""                # don't want a capture group here
+            | "(.*?)(?<![^"]")" # find quote which isn't being escaped
+            | ([^",\r\n]*)      # try to match an unquoted field
           )
-          (?:\n(?=$)|) (?=,|$) /xsg
+          (?:\r?\n(?=$)|)       # allow a trailing newline only
+          (?=,|$) /xsg
       )
     {
         my $field = $1 || $2;
-        $field ||= ( $& =~ /^,?""$/ ? "" : undef );
 
+        # if we don't have a value, we have either an undef or an empty string.
+        # "" will be an empty string, otherwise it should be undef.
+        $field ||= ( $& =~ /^,?""(?:\r?\n)?$/ ? "" : undef );
+
+       # track the pos($str) to ensure each field happends immediately after the
+       # previous match. also, account for a leading comma when $last_pos != 0
         croak("invalid line: $str")
           if pos($str) > $last_pos + length($&) + ( $last_pos != 0 ? 1 : 0 );
 
         $last_pos = pos($str);
 
         if ($field) {
-            if ( $field =~ /(?<!")"(?!")/ ) {
-                croak("quote is not properly escaped");
-            }
+            croak("quote is not properly escaped")
+              if ( $field =~ /(?<!")"(?!")/ );
 
+            # unescape the quotes.
             $field =~ s/""/"/g;
         }
         push @fields, $field;
